@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import heroImage from '@/assets/mailgenius-hero.jpg';
 
 const Hero = () => {
   const handleStartNow = () => {
@@ -41,21 +40,6 @@ const Hero = () => {
               <span className="hidden sm:inline">Experimente grátis por 14 dias</span>
               <span className="sm:hidden">Teste grátis 14 dias</span>
             </Button>
-          </div>
-
-          {/* Hero Image */}
-          <div className="scale-in px-4" style={{ animationDelay: '0.5s' }}>
-            <div className="relative max-w-6xl mx-auto">
-              <img 
-                src={heroImage} 
-                alt="Dashboard do AtendePlus" 
-                className="w-full h-auto rounded-2xl sm:rounded-3xl shadow-glow-hero border border-border/20 glass"
-              />
-              {/* Floating elements around the image - Hidden on mobile */}
-              <div className="hidden sm:block absolute -top-4 -left-4 w-8 h-8 bg-primary rounded-full blur-sm opacity-60 float"></div>
-              <div className="hidden sm:block absolute -bottom-4 -right-4 w-6 h-6 bg-accent rounded-full blur-sm opacity-60 float" style={{ animationDelay: '1s' }}></div>
-              <div className="hidden lg:block absolute top-1/2 -left-8 w-4 h-4 bg-primary-glow rounded-full blur-sm opacity-40 float" style={{ animationDelay: '3s' }}></div>
-            </div>
           </div>
         </div>
       </div>
