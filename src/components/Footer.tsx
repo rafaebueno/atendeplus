@@ -2,7 +2,14 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-background/80 backdrop-blur-xl border-t border-border/20 py-8 sm:py-12">
+    <>
+      {/* Background decoration - Last div before footer */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 right-0 w-56 h-56 bg-primary/5 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-accent/5 rounded-full blur-2xl"></div>
+      </div>
+      
+      <footer className="bg-background/80 backdrop-blur-xl border-t border-border/20 py-8 sm:py-12">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex flex-col items-center space-y-6 sm:space-y-8">
           
@@ -66,7 +73,8 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
+      </footer>
+    </>
   );
 };
 

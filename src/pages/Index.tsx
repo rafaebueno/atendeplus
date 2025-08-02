@@ -7,7 +7,6 @@ import Results from '@/components/Results';
 import Impact from '@/components/Impact';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
-import { UserEmailDisplay } from '@/components/UserEmailDisplay';
 
 const Index = () => {
   useEffect(() => {
@@ -40,17 +39,11 @@ const Index = () => {
       <Header />
       <main className="relative">
         <Hero />
+        <Impact />
         <Features />
         <Comparison />
         <Results />
-        <Impact />
         <CTA />
-        {/* Componente de demonstração da variável global */}
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <UserEmailDisplay />
-          </div>
-        </section>
       </main>
       <Footer />
     </div>

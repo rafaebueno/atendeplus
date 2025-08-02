@@ -1,35 +1,31 @@
 const Results = () => {
   const testimonials = [
     {
-      metric: '68%',
-      title: 'Menos tempo em follow-ups',
-      quote: 'Reduzimos o tempo de resposta em 68% e nossa equipe de vendas agora foca em fechar negócios, não em digitar e-mails.',
-      author: 'CEO, Empresa Inovadora',
+      metric: '48%',
+      title: 'Menos chargebacks na loja',
+      quote: 'Reduzimos nosso índice de chargebacks em 48%, chegando em 1.4% de chargebacks, o Atendefy, está resolvendo os problemas antes de chegarem a acontecer.',
+      author: 'Caio Silva, Dropshipping Brasil',
       gradient: 'from-primary to-accent'
     },
     {
-      metric: '3x',
-      title: 'Mais conversões por e-mail',
-      quote: 'Nossa conversão por e-mail subiu de 3% para 11%. A personalização em escala do Atendefy foi um divisor de águas.',
-      author: 'Diretor de Marketing, Startup Tech',
+      metric: '4x',
+      title: 'Mais rápido para responder',
+      quote: 'A média de resposta para os clientes agora é de 5 minutos! Tratando rastreio em tempo real, trocas, cancelamentos, etc. A personalização em escala do Atendefy foi um divisor de águas.',
+      author: 'Bernardo Xavier, Dropshipping Global',
       gradient: 'from-accent to-primary-glow'
     },
     {
       metric: '99%',
-      title: 'De precisão nos envios',
+      title: 'De acertos no envio',
       quote: 'Eliminamos praticamente todos os erros humanos no envio de propostas e comunicações importantes.',
-      author: 'Gerente de Operações, Consultoria Global',
+      author: 'Gabriel Bacheti, Dropshipping Global',
       gradient: 'from-primary-glow to-secondary'
     }
   ];
 
   return (
-    <section id="results" className="py-24 relative">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 right-0 w-56 h-56 bg-primary/5 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-accent/5 rounded-full blur-2xl"></div>
-      </div>
+    <section id="results" className="pt-8 sm:pt-12 lg:pt-16 pb-24 relative">
+
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-12 sm:mb-16 slide-up px-4">

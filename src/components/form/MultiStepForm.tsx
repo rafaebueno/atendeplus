@@ -132,32 +132,32 @@ export function MultiStepForm() {
 
   if (submitSuccess) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 text-center">
           {/* Aviso sobre integração da equipe */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center justify-center mb-2">
-              <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+            <div className="flex items-center justify-center mb-1 sm:mb-2">
+              <svg className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className="text-sm font-medium text-blue-800">
+              <span className="text-xs sm:text-sm font-medium text-blue-800">
                 Nossa equipe está processando sua integração
               </span>
             </div>
-            <p className="text-sm text-blue-700">
+            <p className="text-xs sm:text-sm text-blue-700">
               Em alguns minutos o Atendefy já estará atendendo automaticamente seus clientes!
             </p>
           </div>
 
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-            <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mx-auto flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-green-100 mb-3 sm:mb-4">
+            <svg className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
             Configuração Concluída!
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
             Suas configurações foram enviadas com sucesso para o webhook. Você receberá notificações sobre novos pedidos e clientes.
           </p>
           <button
@@ -166,7 +166,7 @@ export function MultiStepForm() {
               setCurrentStep(1);
               methods.reset();
             }}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            className="inline-flex items-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Configurar Outra Loja
           </button>
@@ -176,56 +176,55 @@ export function MultiStepForm() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6">
       {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {[1, 2, 3].map((step) => (
-            <div key={step} className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step <= currentStep
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {step}
-              </div>
-              {step < 3 && (
-                <div
-                  className={`w-16 h-1 mx-2 ${
-                    step < currentStep ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
-                />
-              )}
+      <div className="mb-4 sm:mb-8 relative flex items-center justify-between">
+        {/* Background line */}
+        <div className="absolute left-0 right-0 h-1 bg-gray-200 z-0"></div>
+        {/* Active part of the line */}
+        <div
+          className={`absolute left-0 h-1 bg-blue-600 z-0 transition-all duration-300`}
+          style={{ width: `${(currentStep - 1) / (3 - 1) * 100}%` }}
+        ></div>
+
+        {[1, 2, 3].map((step) => (
+          <div key={step} className="relative z-10">
+            <div
+              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium ${
+                step <= currentStep
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              {step}
             </div>
-          ))}
-        </div>
-        <div className="flex justify-between text-sm text-gray-600 mt-2">
-          <span>Shopify</span>
-          <span>Domínio</span>
-          <span>Email</span>
-        </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-between text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
+        <span>Shopify</span>
+        <span>Domínio</span>
+        <span>Email</span>
       </div>
 
       {/* Form */}
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           {currentStep === 1 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Passo 1: Configurar Shopify</h3>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Passo 1: Configurar Shopify</h3>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <div className="ml-3">
-                    <h4 className="text-sm font-medium text-blue-800 mb-2">
+                  <div className="ml-2 sm:ml-3">
+                    <h4 className="text-xs sm:text-sm font-medium text-blue-800 mb-1 sm:mb-2">
                       Como criar o app Atendefy na Shopify
                     </h4>
-                    <div className="text-sm text-blue-700 space-y-3">
+                    <div className="text-xs sm:text-sm text-blue-700 space-y-2 sm:space-y-3">
                       <div>
                         <p className="font-medium">Passo 1: Acesse sua loja Shopify</p>
                         <p>1. Vá em <strong>Configurações → Apps</strong></p>
@@ -242,7 +241,7 @@ export function MultiStepForm() {
                         <p>1. No seu app, vá para <strong>"App credentials"</strong></p>
                         <p>2. Em <strong>"Configure Admin API scopes"</strong></p>
                         <p>3. Adicione as seguintes permissões:</p>
-                        <ul className="ml-4 mt-1 space-y-1">
+                        <ul className="ml-3 sm:ml-4 mt-1 space-y-1">
                           <li>• <strong>Customers</strong>: read_customers, write_customers</li>
                           <li>• <strong>Orders</strong>: read_orders, write_orders</li>
                         </ul>
@@ -255,12 +254,12 @@ export function MultiStepForm() {
                         <p>3. Copie o <strong>"Admin API access token"</strong> (começa com <code className="bg-blue-100 px-1 rounded">shpat_</code>)</p>
                         <p>4. Cole o token no campo abaixo</p>
                       </div>
-                      <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mt-3">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded p-2 sm:p-3 mt-2 sm:mt-3">
                         <div className="flex">
-                          <svg className="h-5 w-5 text-yellow-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                          <svg className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                           </svg>
-                          <p className="ml-2 text-sm text-yellow-800 font-medium">
+                          <p className="ml-2 text-xs sm:text-sm text-yellow-800 font-medium">
                             <strong>⚠️ Importante</strong>: Mantenha este token seguro e não o compartilhe!
                           </p>
                         </div>
@@ -269,7 +268,7 @@ export function MultiStepForm() {
                   </div>
                 </div>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label htmlFor="shopifyToken" className="block text-sm font-medium text-gray-700">
                     Token do Shopify
@@ -288,9 +287,9 @@ export function MultiStepForm() {
           )}
           
           {currentStep === 2 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Passo 2: Configurar Domínio</h3>
-              <div className="space-y-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Passo 2: Configurar Domínio</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label htmlFor="shopDomain" className="block text-sm font-medium text-gray-700">
                     Domínio da Loja
@@ -309,9 +308,9 @@ export function MultiStepForm() {
           )}
           
           {currentStep === 3 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Passo 3: Configurar Email e Informações da Loja</h3>
-              <div className="space-y-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Passo 3: Configurar Email e Informações da Loja</h3>
+              <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label htmlFor="storeName" className="block text-sm font-medium text-gray-700">
                     Nome da Loja
@@ -364,12 +363,12 @@ export function MultiStepForm() {
                     required
                   />
                   {showOutlookMessage && (
-                    <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                    <div className="mt-2 p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                       <div className="flex">
-                        <svg className="h-5 w-5 text-yellow-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <svg className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>
-                        <p className="ml-2 text-sm text-yellow-800">
+                        <p className="ml-2 text-xs sm:text-sm text-yellow-800">
                           <strong>⚠️ Aviso:</strong> Um suporte vai te chamar para fazer a integração de maneira completa, o Outlook necessita de uma integração manual.
                         </p>
                       </div>
@@ -434,24 +433,24 @@ export function MultiStepForm() {
 
           {/* Error Messages */}
           {validationError && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-sm text-red-700">{validationError}</p>
+            <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-xs sm:text-sm text-red-700">{validationError}</p>
             </div>
           )}
 
           {submitError && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-sm text-red-700">{submitError}</p>
+            <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-xs sm:text-sm text-red-700">{submitError}</p>
             </div>
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-between mt-4 sm:mt-6">
             {currentStep > 1 && (
               <button
                 type="button"
                 onClick={prevStep}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                className="inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
                 Anterior
               </button>
@@ -461,7 +460,7 @@ export function MultiStepForm() {
               <button
                 type="button"
                 onClick={nextStep}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="inline-flex items-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
                 Próximo
               </button>
@@ -469,7 +468,7 @@ export function MultiStepForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                className="inline-flex items-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
               >
                 {isSubmitting ? 'Enviando...' : 'Enviar Configuração'}
               </button>

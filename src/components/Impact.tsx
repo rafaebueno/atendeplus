@@ -1,4 +1,12 @@
+import { useState, useRef, useEffect } from 'react';
+
 const Impact = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
   const beforeData = [
     { label: 'Pedidos', value: '3.748' },
     { label: 'Atendentes humanos', value: '3' },
@@ -22,83 +30,170 @@ const Impact = () => {
     { label: 'Chargeback', value: 'R$ 360,00' }
   ];
 
+  // Detect slide changes
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const handleScroll = () => {
+      const scrollPosition = slider.scrollLeft;
+      const slideWidth = slider.offsetWidth;
+      const newSlide = Math.round(scrollPosition / slideWidth);
+      setCurrentSlide(newSlide);
+    };
+
+    slider.addEventListener('scroll', handleScroll);
+    return () => slider.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.pageX - (sliderRef.current?.offsetLeft || 0));
+    setScrollLeft(sliderRef.current?.scrollLeft || 0);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - (sliderRef.current?.offsetLeft || 0);
+    const walk = (x - startX) * 2;
+    if (sliderRef.current) {
+      sliderRef.current.scrollLeft = scrollLeft - walk;
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - (sliderRef.current?.offsetLeft || 0));
+    setScrollLeft(sliderRef.current?.scrollLeft || 0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const x = e.touches[0].pageX - (sliderRef.current?.offsetLeft || 0);
+    const walk = (x - startX) * 2;
+    if (sliderRef.current) {
+      sliderRef.current.scrollLeft = scrollLeft - walk;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <section id="impact" className="py-16 sm:py-20 lg:py-24 relative">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 sm:w-96 h-60 sm:h-96 bg-accent/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 sm:w-96 h-60 sm:h-96 bg-green-600/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-12 sm:mb-16 slide-up px-4">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
-            Veja o <span className="gradient-text">Impacto Real</span> nos Números
+            Veja o <span className="text-green-600">Impacto Real</span> nos Números
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto">
-            Análise comparativa de um cliente real em um período de 2 meses antes e depois de implementar o Atendefy
+          <p className="text-base sm:text-lg md:text-xl text-white max-w-4xl mx-auto">
+            Análise comparativa de um cliente real em um período de 2 meses com o <b>Atendefy</b>
           </p>
         </div>
 
         <div className="max-w-7xl mx-auto">
-          <div className="bg-muted/20 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-border/40 scale-in">
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-green-200 shadow-xl scale-in">
             
-            {/* Mobile Layout */}
-            <div className="block lg:hidden space-y-6">
-              
-              {/* ANTES - Mobile */}
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl p-3 sm:p-4 text-center border border-orange-500/30">
-                  <h3 className="font-bold text-base sm:text-lg text-orange-400">
-                    ANTES DE IMPLEMENTAR
-                  </h3>
-                  <p className="text-xs sm:text-sm text-orange-300 mt-1">(abril - maio/25)</p>
-                </div>
-                
-                <div className="bg-primary/10 rounded-lg p-2 sm:p-3 text-center border border-primary/30">
-                  <p className="text-xs sm:text-sm font-semibold text-primary">
-                    Países: Espanha e Estados Unidos
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  {beforeData.map((item, index) => (
-                    <div 
-                      key={index}
-                      className="flex justify-between py-2 sm:py-3 px-3 sm:px-4 rounded-lg bg-muted/30 border border-border/30 shadow-sm"
-                    >
-                      <span className="text-xs sm:text-sm font-semibold text-foreground">{item.label}</span>
-                      <span className="text-xs sm:text-sm text-muted-foreground">{item.value}</span>
-                    </div>
-                  ))}
+            {/* Mobile Slider Layout */}
+            <div className="block lg:hidden">
+              {/* Slider Indicators */}
+              <div className="flex justify-center mb-6">
+                <div className="flex space-x-2">
+                  <div className={`w-3 h-3 rounded-full transition-colors duration-300 ${currentSlide === 0 ? 'bg-red-500' : 'bg-gray-300'}`}></div>
+                  <div className={`w-3 h-3 rounded-full transition-colors duration-300 ${currentSlide === 1 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
                 </div>
               </div>
 
-              {/* DEPOIS - Mobile */}
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl p-3 sm:p-4 text-center border border-green-500/30">
-                  <h3 className="font-bold text-base sm:text-lg text-green-400">
-                    DEPOIS DA FERRAMENTA
-                  </h3>
-                  <p className="text-xs sm:text-sm text-green-300 mt-1">(jun - jul / 25)</p>
-                </div>
-                
-                <div className="bg-primary/10 rounded-lg p-2 sm:p-3 text-center border border-primary/30">
-                  <p className="text-xs sm:text-sm font-semibold text-primary">
-                    Países: Espanha e Estados Unidos
-                  </p>
+              {/* Slider Container */}
+              <div 
+                ref={sliderRef}
+                className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {/* ANTES Slide */}
+                <div className="flex-shrink-0 w-full snap-start px-2">
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl p-3 sm:p-4 text-center border border-red-300">
+                      <h3 className="font-bold text-base sm:text-lg text-red-700">
+                        ANTES DE IMPLEMENTAR
+                      </h3>
+                      <p className="text-xs sm:text-sm text-red-600 mt-1">(abril - maio/25)</p>
+                    </div>
+                    
+                    <div className="bg-green-50 rounded-lg p-2 sm:p-3 text-center border border-green-200">
+                      <p className="text-xs sm:text-sm font-semibold text-green-700">
+                        Países: Espanha e Estados Unidos
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      {beforeData.map((item, index) => (
+                        <div 
+                          key={index}
+                          className="flex justify-between py-2 sm:py-3 px-3 sm:px-4 rounded-lg bg-gray-50 border border-gray-200 shadow-sm"
+                        >
+                          <span className="text-xs sm:text-sm font-semibold text-gray-700">{item.label}</span>
+                          <span className="text-xs sm:text-sm text-gray-600">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  {afterData.map((item, index) => (
-                    <div 
-                      key={index}
-                      className="flex justify-between py-2 sm:py-3 px-3 sm:px-4 rounded-lg bg-muted/5 border border-border/10"
-                    >
-                      <span className="text-xs sm:text-sm font-semibold text-foreground">{item.label}</span>
-                      <span className="text-xs sm:text-sm font-bold text-primary">{item.value}</span>
+                {/* DEPOIS Slide */}
+                <div className="flex-shrink-0 w-full snap-start px-2">
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-r from-green-500/15 to-emerald-500/15 rounded-xl p-3 sm:p-4 text-center border border-green-400 shadow-md">
+                      <h3 className="font-bold text-base sm:text-lg text-green-700">
+                        DEPOIS DA FERRAMENTA
+                      </h3>
+                      <p className="text-xs sm:text-sm text-green-600 mt-1">(jun - jul / 25)</p>
                     </div>
-                  ))}
+                    
+                    <div className="bg-green-50 rounded-lg p-2 sm:p-3 text-center border border-green-200">
+                      <p className="text-xs sm:text-sm font-semibold text-green-700">
+                        Países: Espanha e Estados Unidos
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      {afterData.map((item, index) => (
+                        <div 
+                          key={index}
+                          className="flex justify-between py-2 sm:py-3 px-3 sm:px-4 rounded-lg bg-green-50/50 border border-green-200 shadow-sm"
+                        >
+                          <span className="text-xs sm:text-sm font-semibold text-gray-700">{item.label}</span>
+                          <span className="text-xs sm:text-sm font-bold text-green-700">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              {/* Swipe Instructions */}
+              <div className="text-center mt-4">
+                <p className="text-xs text-gray-500">
+                  ← Arraste para ver a diferença →
+                </p>
               </div>
             </div>
 
@@ -107,15 +202,15 @@ const Impact = () => {
               
               {/* ANTES - Desktop */}
               <div className="space-y-6">
-                <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-2xl p-4 text-center border border-orange-500/30">
-                  <h3 className="font-bold text-lg text-orange-400">
+                <div className="bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-2xl p-4 text-center border border-red-300">
+                  <h3 className="font-bold text-lg text-red-700">
                     ANTES DE IMPLEMENTAR
                   </h3>
-                  <p className="text-sm text-orange-300 mt-1">(abril - maio/25)</p>
+                  <p className="text-sm text-red-600 mt-1">(abril - maio/25)</p>
                 </div>
                 
-                <div className="bg-primary/10 rounded-xl p-3 text-center border border-primary/30">
-                  <p className="text-sm font-semibold text-primary">
+                <div className="bg-green-50 rounded-xl p-3 text-center border border-green-200">
+                  <p className="text-sm font-semibold text-green-700">
                     Países: Espanha (Espanhol) e Estados Unidos (Inglês)
                   </p>
                 </div>
@@ -124,10 +219,10 @@ const Impact = () => {
                   {beforeData.map((item, index) => (
                     <div 
                       key={index}
-                      className="flex justify-between py-3 px-4 rounded-xl bg-muted/5 border border-border/10 hover:bg-muted/10 transition-all duration-300"
+                      className="flex justify-between py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-all duration-300"
                     >
-                      <span className="font-semibold text-foreground">{item.label}</span>
-                      <span className="text-muted-foreground">{item.value}</span>
+                      <span className="font-semibold text-gray-700">{item.label}</span>
+                      <span className="text-gray-600">{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -135,15 +230,15 @@ const Impact = () => {
 
               {/* DEPOIS - Desktop */}
               <div className="space-y-6">
-                <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-2xl p-4 text-center border border-green-500/30">
-                  <h3 className="font-bold text-lg text-green-400">
+                <div className="bg-gradient-to-r from-green-500/15 to-emerald-500/15 rounded-2xl p-4 text-center border border-green-400 shadow-md">
+                  <h3 className="font-bold text-lg text-green-700">
                     DEPOIS DA FERRAMENTA
                   </h3>
-                  <p className="text-sm text-green-300 mt-1">(jun - jul / 25)</p>
+                  <p className="text-sm text-green-600 mt-1">(jun - jul / 25)</p>
                 </div>
                 
-                <div className="bg-primary/10 rounded-xl p-3 text-center border border-primary/30">
-                  <p className="text-sm font-semibold text-primary">
+                <div className="bg-green-50 rounded-xl p-3 text-center border border-green-200">
+                  <p className="text-sm font-semibold text-green-700">
                     Países: Espanha (Espanhol) e Estados Unidos (Inglês)
                   </p>
                 </div>
@@ -152,35 +247,40 @@ const Impact = () => {
                   {afterData.map((item, index) => (
                     <div 
                       key={index}
-                      className="flex justify-between py-3 px-4 rounded-xl bg-muted/5 border border-border/10 hover:bg-muted/10 transition-all duration-300"
+                      className="flex justify-between py-3 px-4 rounded-xl bg-green-50/50 border border-green-200 hover:bg-green-100 transition-all duration-300"
                     >
-                      <span className="font-semibold text-foreground">{item.label}</span>
-                      <span className="font-bold text-primary">{item.value}</span>
+                      <span className="font-semibold text-gray-700">{item.label}</span>
+                      <span className="font-bold text-green-700">{item.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* ECONOMIA */}
+            {/* ECONOMIA - Destaque Principal */}
             <div className="mt-8 sm:mt-12 flex justify-center">
-              <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-accent/30 max-w-sm w-full">
-                <h4 className="text-center font-bold text-lg sm:text-xl text-accent mb-3 sm:mb-4">
-                  ECONOMIA TOTAL
+              <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-green-500 max-w-md w-full shadow-2xl transform hover:scale-105 transition-all duration-300">
+                <h4 className="text-center font-bold text-xl sm:text-2xl text-white mb-4 sm:mb-6">
+                  💰 ECONOMIA TOTAL
                 </h4>
-                <div className="space-y-2 sm:space-y-3">
+                <div className="space-y-3 sm:space-y-4">
                   {savings.map((item, index) => (
-                    <div key={index} className="flex justify-between">
-                      <span className="text-sm sm:text-base text-accent-foreground">{item.label}</span>
-                      <span className="text-sm sm:text-lg font-bold text-accent">{item.value}</span>
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-sm sm:text-base text-green-100">{item.label}</span>
+                      <span className="text-lg sm:text-xl font-bold text-white">{item.value}</span>
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-accent/30 mt-3 sm:mt-4 pt-3 sm:pt-4">
-                  <div className="flex justify-between text-base sm:text-xl font-bold">
-                    <span className="text-accent">Total Mensal:</span>
-                    <span className="text-accent">R$ 3.360,00</span>
+                <div className="border-t border-green-500 mt-4 sm:mt-6 pt-4 sm:pt-6">
+                  <div className="flex justify-between text-lg sm:text-2xl font-bold">
+                    <span className="text-green-100">Total Mensal:</span>
+                    <span className="text-white">R$ 3.360,00</span>
                   </div>
+                </div>
+                <div className="mt-4 text-center">
+                  <span className="text-green-200 text-sm font-medium">
+                    ✨ Economia garantida com Atendefy
+                  </span>
                 </div>
               </div>
             </div>

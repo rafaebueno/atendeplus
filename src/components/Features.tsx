@@ -25,15 +25,16 @@ const Features = () => {
   ];
 
   return (
-    <section id="features" className="py-16 sm:py-20 lg:py-24 relative">
+    <section id="features" className="pt-4 sm:pt-6 lg:pt-8 pb-8 sm:pb-12 lg:pb-16 relative">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-60 sm:w-80 h-60 sm:h-80 bg-green-600/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-primary/5 rounded-full blur-2xl"></div>
         <div className="absolute bottom-0 right-0 w-40 sm:w-64 h-40 sm:h-64 bg-accent/5 rounded-full blur-2xl"></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="text-center mb-12 sm:mb-16 slide-up px-4">
+        <div className="text-center mb-4 sm:mb-6 slide-up px-4">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
             A solução <span className="gradient-text">inteligente</span>
           </h2>
