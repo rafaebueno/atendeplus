@@ -4,7 +4,7 @@
 
 ### **Configurações do Supabase**
 - **URL**: `https://ottbcbxqfutzsistuhru.supabase.co`
-- **Anon Key**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90dGJjYnhxZnV0enNpc3R1aHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3NjIzMTEsImV4cCI6MjA2OTMzODMxMX0.qYnTKZWkCh68taDt8aD3qdYBYFwtwdlPrkoDC48vKa4`
+- **Anon Key**: `[CONFIGURADO VIA VARIÁVEL DE AMBIENTE]`
 
 ## 🔧 Arquivos Criados/Modificados
 
@@ -13,7 +13,11 @@
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ottbcbxqfutzsistuhru.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90dGJjYnhxZnV0enNpc3R1aHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3NjIzMTEsImV4cCI6MjA2OTMzODMxMX0.qYnTKZWkCh68taDt8aD3qdYBYFwtwdlPrkoDC48vKa4'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+
+if (!supabaseAnonKey) {
+  console.warn('⚠️ VITE_SUPABASE_ANON_KEY não configurada')
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 ```
@@ -101,35 +105,19 @@ Crie um arquivo `.env` na raiz do projeto:
 
 ```env
 VITE_SUPABASE_URL=https://ottbcbxqfutzsistuhru.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90dGJjYnhxZnV0enNpc3R1aHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3NjIzMTEsImV4cCI6MjA2OTMzODMxMX0.qYnTKZWkCh68taDt8aD3qdYBYFwtwdlPrkoDC48vKa4
+VITE_SUPABASE_ANON_KEY=sua-chave-anonima-aqui
+VITE_SUPABASE_SERVICE_KEY=sua-chave-de-servico-aqui
 ```
 
-## ✅ Status Final
+## 🛡️ Segurança
 
-- ✅ **Autenticação Real**: Integrada com Supabase
-- ✅ **Sessão Persistente**: Mantém login entre sessões
-- ✅ **Proteção de Rotas**: Verifica autenticação
-- ✅ **Redirecionamento**: Login → Configuração
-- ✅ **Dados do Usuário**: Email e WhatsApp salvos
-- ✅ **Loading States**: Interface responsiva
+- ✅ Chaves não expostas no código fonte
+- ✅ Uso de variáveis de ambiente
+- ✅ Validações de segurança implementadas
+- ✅ Arquivo `.env` no `.gitignore`
 
-## 🚀 Como Testar
+## 📋 Próximos Passos
 
-1. **Execute**: `npm run dev`
-2. **Acesse**: http://localhost:8080
-3. **Teste o fluxo**:
-   - Cadastro com email, senha e WhatsApp
-   - Login com email e senha
-   - Verifique se redireciona para configuração
-   - Teste logout e login novamente
-
-## 🎉 Resultado
-
-Agora o sistema tem **autenticação real** com Supabase:
-- ✅ Cadastro e login funcionais
-- ✅ Sessão persistente
-- ✅ Proteção de rotas
-- ✅ Dados do usuário salvos
-- ✅ Fluxo completo integrado
-
-**Autenticação 100% funcional com Supabase!** 🔐 
+1. Configure suas chaves reais no arquivo `.env`
+2. Nunca comite o arquivo `.env`
+3. Use chaves diferentes para desenvolvimento e produção 

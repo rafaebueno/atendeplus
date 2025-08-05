@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { WebhookService } from '@/lib/webhook-service';
+import { UserQueryService } from '@/lib/user-query-service';
+import { useUserEmail } from '@/lib/user-context';
 
 type FormData = {
   shopifyToken: string;
@@ -23,7 +25,10 @@ export function MultiStepForm() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [showOutlookMessage, setShowOutlookMessage] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const { user } = useAuth();
+  const { setUserPlano } = useUserEmail();
 
   const methods = useForm<FormData>();
   const { handleSubmit, getValues, watch } = methods;
@@ -38,6 +43,38 @@ export function MultiStepForm() {
       setShowOutlookMessage(false);
     }
   }, [emailProvider]);
+
+  // Consultar perfil na primeira etapa
+  useEffect(() => {
+    if (currentStep === 1 && user?.email) {
+      const checkUserProfile = async () => {
+        setIsLoadingProfile(true);
+        try {
+          console.log('🔍 Verificando perfil do usuário:', user.email);
+          const result = await UserQueryService.queryUserProfile(user.email);
+          setUserProfile(result);
+          
+          if (result.error) {
+            console.warn('⚠️ Erro ao consultar perfil:', result.error);
+          } else {
+            console.log('✅ Perfil carregado com sucesso:', result);
+            // Definir o plano do usuário no contexto global
+            if (result.plano) {
+              setUserPlano(result.plano);
+              console.log('💾 Plano definido no contexto:', result.plano);
+            }
+          }
+        } catch (error) {
+          console.error('❌ Erro inesperado na consulta:', error);
+          setUserProfile({ data: [], error: 'Erro inesperado' });
+        } finally {
+          setIsLoadingProfile(false);
+        }
+      };
+      
+      checkUserProfile();
+    }
+  }, [currentStep, user?.email, setUserPlano]);
 
   const validateStep = (step: number): boolean => {
     const values = getValues();
@@ -109,7 +146,28 @@ export function MultiStepForm() {
     setCurrentStep(currentStep - 1);
   };
 
+  // Handler para tecla Enter - apenas avança etapas
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Previne o envio do formulário
+      
+      // Se estamos no último passo, não fazer nada com Enter
+      if (currentStep === 3) {
+        return;
+      }
+      
+      // Se não estamos no último passo, avançar para o próximo
+      nextStep();
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
+    // Só permitir envio se estivermos no último passo
+    if (currentStep !== 3) {
+      console.log('⚠️ Tentativa de envio em passo incompleto:', currentStep);
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError('');
     
@@ -209,10 +267,37 @@ export function MultiStepForm() {
 
       {/* Form */}
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyDown}>
           {currentStep === 1 && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
               <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Passo 1: Configurar Shopify</h3>
+              
+              {/* Status da consulta do perfil */}
+              {isLoadingProfile && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <div className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p className="text-sm text-blue-700">🔍 Verificando perfil do usuário...</p>
+                  </div>
+                </div>
+              )}
+              
+              {userProfile?.error && !isLoadingProfile && (
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <div className="flex items-center">
+                    <svg className="h-4 w-4 text-yellow-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <p className="text-sm text-yellow-700">
+                      ⚠️ Não foi possível carregar o perfil: {userProfile.error}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
                 <div className="flex">
                   <div className="flex-shrink-0">

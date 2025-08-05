@@ -5,117 +5,67 @@ interface UserProfileResponse {
 }
 
 export class UserQueryService {
-  private static readonly SUPABASE_URL = 'https://ottbcbxqfutzsistuhru.supabase.co/rest/v1';
-  private static readonly API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90dGJjYnhxZnV0enNpc3R1aHJ1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzc2MjMxMSwiZXhwIjoyMDY5MzM4MzExfQ.u5hAqjlJV5vSPus6O8kT8yQFuCgILvBTgTq0rf8Av2M';
-
-  // Função para verificar se a tabela existe
-  static async checkTableExists(): Promise<boolean> {
+  static async queryUserProfile(userEmail: string): Promise<UserProfileResponse> {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const apiKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    // Validação de credenciais
+    if (!apiKey) {
+      console.error('❌ API_KEY não configurada');
+      return { data: [], error: 'API_KEY não configurada' };
+    }
+    
+    if (!supabaseUrl) {
+      console.error('❌ SUPABASE_URL não configurada');
+      return { data: [], error: 'SUPABASE_URL não configurada' };
+    }
+    
     try {
-      console.log('🔍 Verificando se a tabela user_profiles existe...');
+      console.log('🔍 Consultando perfil para:', userEmail);
       
-      const response = await fetch(`${this.SUPABASE_URL}/user_profiles?select=count`, {
+      const endpoint = `${supabaseUrl}/rest/v1/user_profiles?email=eq.${encodeURIComponent(userEmail)}`;
+      console.log('🌐 URL da consulta:', endpoint);
+      
+      const response = await fetch(endpoint, {
         method: 'GET',
         headers: {
-          'apikey': this.API_KEY,
-          'Authorization': `Bearer ${this.API_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'count=exact'
+          'apikey': apiKey,
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
         }
       });
-
-      if (response.status === 404) {
-        console.error('❌ Tabela user_profiles não encontrada (404)');
-        return false;
-      }
-
-      if (!response.ok) {
-        console.error(`❌ Erro ao verificar tabela: ${response.status}`);
-        return false;
-      }
-
-      console.log('✅ Tabela user_profiles existe');
-      return true;
-    } catch (error) {
-      console.error('❌ Erro ao verificar tabela:', error);
-      return false;
-    }
-  }
-
-  static async queryUserProfile(userEmail: string): Promise<UserProfileResponse> {
-    try {
-      console.log('🔍 Consultando perfil do usuário:', userEmail);
       
-      // Primeiro verificar se a tabela existe
-      const tableExists = await this.checkTableExists();
-      if (!tableExists) {
-        console.error('❌ Tabela user_profiles não existe. Criando tabela...');
+      // Tratamento de erros HTTP
+      if (response.status === 404) {
+        console.warn('⚠️ Tabela user_profiles não existe no Supabase');
         return { data: [], error: 'Tabela não existe' };
       }
       
-      const response = await fetch(`${this.SUPABASE_URL}/user_profiles?email=eq.${encodeURIComponent(userEmail)}`, {
-        method: 'GET',
-        headers: {
-          'apikey': this.API_KEY,
-          'Authorization': `Bearer ${this.API_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        }
-      });
-
-      if (response.status === 404) {
-        console.error('❌ Tabela user_profiles não encontrada (404)');
-        return { data: [], error: 'Tabela não encontrada' };
+      if (response.status === 401 || response.status === 403) {
+        console.error('❌ Erro de autenticação:', response.status);
+        return { data: [], error: 'Erro de autenticação' };
       }
-
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.error(`❌ Erro HTTP: ${response.status}`);
+        return { data: [], error: `HTTP error! status: ${response.status}` };
       }
-
+      
       const data = await response.json();
-      console.log('✅ Consulta realizada com sucesso:', data);
+      console.log('✅ Resposta recebida:', data);
       
-      // Extrair o campo "plano" do primeiro resultado
-      let plano = null;
-      if (data && data.length > 0 && data[0].plano) {
-        plano = data[0].plano;
-        console.log('📋 Plano encontrado:', plano);
-      } else {
-        console.log('📋 Nenhum plano encontrado para o usuário');
-      }
+      // Extrair plano do primeiro resultado
+      const plano = data && data.length > 0 ? data[0].plano : null;
+      console.log('📋 Plano encontrado:', plano);
       
-      return { data, plano };
+      return { 
+        data, 
+        plano,
+        error: null 
+      };
     } catch (error) {
       console.error('❌ Erro na consulta ao Supabase:', error);
       return { data: [], error };
-    }
-  }
-
-  // Função para criar a tabela se não existir
-  static async createUserProfilesTable(): Promise<boolean> {
-    try {
-      console.log('🔧 Tentando criar tabela user_profiles...');
-      
-      // Usar RPC para criar tabela
-      const response = await fetch(`${this.SUPABASE_URL}/rpc/create_user_profiles_table`, {
-        method: 'POST',
-        headers: {
-          'apikey': this.API_KEY,
-          'Authorization': `Bearer ${this.API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-      });
-
-      if (response.ok) {
-        console.log('✅ Tabela user_profiles criada com sucesso');
-        return true;
-      } else {
-        console.error('❌ Erro ao criar tabela:', response.status);
-        return false;
-      }
-    } catch (error) {
-      console.error('❌ Erro ao criar tabela:', error);
-      return false;
     }
   }
 } 

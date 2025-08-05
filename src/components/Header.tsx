@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { useUserEmail } from '@/lib/user-context.tsx';
-import { UserPlanDisplay } from '@/components/UserPlanDisplay';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { userEmail, userPlano } = useUserEmail();
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
@@ -27,21 +24,6 @@ const Header = () => {
               Atendefy
             </div>
           </div>
-
-          {/* User Info - Só aparece se o usuário estiver logado */}
-          {userEmail && (
-            <div className="hidden md:flex items-center gap-3">
-              <div className="flex flex-col items-start gap-2 px-4 py-3 rounded-xl bg-white/15 backdrop-blur-md border border-white/25 shadow-lg hover:bg-white/20 transition-all duration-300">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-sm"></div>
-                  <span className="text-sm text-white/90 font-medium truncate max-w-[140px]">
-                    {userEmail}
-                  </span>
-                </div>
-                <UserPlanDisplay />
-              </div>
-            </div>
-          )}
 
           {/* Mobile menu button */}
           <button 
@@ -98,19 +80,6 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-black border-t border-gray-800/50">
           <nav className="container mx-auto px-4 py-6 space-y-4">
-            {/* User Info Mobile */}
-            {userEmail && (
-              <div className="flex flex-col items-start gap-3 p-4 rounded-xl bg-white/15 backdrop-blur-md border border-white/25 shadow-lg mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-sm"></div>
-                  <span className="text-sm text-white/90 font-medium truncate">
-                    {userEmail}
-                  </span>
-                </div>
-                <UserPlanDisplay />
-              </div>
-            )}
-            
             <button 
               onClick={() => scrollToSection('features')}
               className="block w-full text-left py-3 px-4 rounded-lg text-gray-300 hover:text-green-400 hover:bg-gray-800/50 transition-all duration-300"

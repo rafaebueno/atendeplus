@@ -1,8 +1,10 @@
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useUserEmail } from '@/lib/user-context';
 import { MultiStepForm } from '@/components/form/MultiStepForm';
 
 const Config = () => {
   const { user, signOut, loading } = useAuth();
+  const { userPlano } = useUserEmail();
 
   // Mostrar loading enquanto verifica autenticação
   if (loading) {
@@ -50,7 +52,7 @@ const Config = () => {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                Olá, {user?.email || 'Usuário'}
+                Plano: {userPlano || 'Básico'}
               </span>
               <button
                 onClick={signOut}
