@@ -1,3 +1,6 @@
+import LazyImage from '@/components/LazyImage';
+
+// Usando imports dinâmicos para as imagens
 import emailIcon from '@/assets/email-automation-icon.jpg';
 import aiIcon from '@/assets/ai-brain-icon.jpg';
 import scheduleIcon from '@/assets/scheduling-icon.jpg';
@@ -53,10 +56,12 @@ const Features = () => {
               {/* Icon container with gradient background */}
               <div className={`relative w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} p-0.5 mb-4 sm:mb-6 mx-auto`}>
                 <div className="w-full h-full rounded-2xl bg-card flex items-center justify-center overflow-hidden">
-                  <img 
+                  <LazyImage
                     src={feature.icon} 
                     alt={feature.title}
                     className="w-10 sm:w-12 h-10 sm:h-12 object-cover rounded-lg"
+                    width={48}
+                    height={48}
                   />
                 </div>
               </div>

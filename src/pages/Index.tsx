@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
-import Features from '@/components/Features';
-import Comparison from '@/components/Comparison';
-import Results from '@/components/Results';
-import Impact from '@/components/Impact';
-import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
+
+// Lazy loading para componentes pesados
+const Features = lazy(() => import('@/components/Features'));
+const Comparison = lazy(() => import('@/components/Comparison'));
+const Results = lazy(() => import('@/components/Results'));
+const Impact = lazy(() => import('@/components/Impact'));
 
 const Index = () => {
   useEffect(() => {
@@ -39,11 +40,34 @@ const Index = () => {
       <Header />
       <main className="relative">
         <Hero />
-        <Impact />
-        <Features />
-        <Comparison />
-        <Results />
-        <CTA />
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+          </div>
+        }>
+          <Impact />
+        </Suspense>
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+          </div>
+        }>
+          <Features />
+        </Suspense>
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+          </div>
+        }>
+          <Comparison />
+        </Suspense>
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+          </div>
+        }>
+          <Results />
+        </Suspense>
       </main>
       <Footer />
     </div>

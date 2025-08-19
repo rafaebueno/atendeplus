@@ -1,89 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { memo } from 'react';
+import { useSlider } from '@/hooks/useSlider';
+import { beforeData, afterData, savings } from './ImpactData';
 
-const Impact = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const beforeData = [
-    { label: 'Pedidos', value: '3.748' },
-    { label: 'Atendentes humanos', value: '3' },
-    { label: 'Custo x Atendente MENSAL', value: 'R$ 3.600,00' },
-    { label: 'Chargebacks', value: '65' },
-    { label: '% de Chargeback', value: '1,73%' },
-    { label: 'Custo Chargeback', value: 'R$ 950,00' }
-  ];
-
-  const afterData = [
-    { label: 'Pedidos', value: '4.873' },
-    { label: 'Atendentes humanos', value: '1 (meio turno)' },
-    { label: 'Custo x Atendente MENSAL', value: 'R$ 600,00' },
-    { label: 'Chargebacks', value: '59' },
-    { label: '% de Chargeback', value: '1,21%' },
-    { label: 'Custo Chargeback', value: 'R$ 590,00' }
-  ];
-
-  const savings = [
-    { label: 'Atendimento', value: 'R$ 3.000,00' },
-    { label: 'Chargeback', value: 'R$ 360,00' }
-  ];
-
-  // Detect slide changes
-  useEffect(() => {
-    const slider = sliderRef.current;
-    if (!slider) return;
-
-    const handleScroll = () => {
-      const scrollPosition = slider.scrollLeft;
-      const slideWidth = slider.offsetWidth;
-      const newSlide = Math.round(scrollPosition / slideWidth);
-      setCurrentSlide(newSlide);
-    };
-
-    slider.addEventListener('scroll', handleScroll);
-    return () => slider.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setStartX(e.pageX - (sliderRef.current?.offsetLeft || 0));
-    setScrollLeft(sliderRef.current?.scrollLeft || 0);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - (sliderRef.current?.offsetLeft || 0);
-    const walk = (x - startX) * 2;
-    if (sliderRef.current) {
-      sliderRef.current.scrollLeft = scrollLeft - walk;
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true);
-    setStartX(e.touches[0].pageX - (sliderRef.current?.offsetLeft || 0));
-    setScrollLeft(sliderRef.current?.scrollLeft || 0);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    const x = e.touches[0].pageX - (sliderRef.current?.offsetLeft || 0);
-    const walk = (x - startX) * 2;
-    if (sliderRef.current) {
-      sliderRef.current.scrollLeft = scrollLeft - walk;
-    }
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-  };
+const Impact = memo(() => {
+  const {
+    currentSlide,
+    sliderRef,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+  } = useSlider();
 
   return (
     <section id="impact" className="py-16 sm:py-20 lg:py-24 relative">
@@ -289,6 +218,8 @@ const Impact = () => {
       </div>
     </section>
   );
-};
+});
+
+Impact.displayName = 'Impact';
 
 export default Impact;

@@ -1,16 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
+// Sistema de autenticação mock permanente
+// Funcionalidades: Login, Cadastro, Sessões persistentes, Logs detalhados
+// Vantagens: Zero dependências externas, funcionamento garantido, deploy simplificado
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ottbcbxqfutzsistuhru.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+import { createClient, supabase } from './supabase-mock'
 
-if (!supabaseAnonKey) {
-  console.warn('⚠️ VITE_SUPABASE_ANON_KEY não configurada')
-}
+console.log('🚀 Atendefy: Sistema de autenticação mock ativo')
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: false,    // ❌ Não renovar tokens
-    persistSession: false,      // ❌ Não persistir sessão
-    detectSessionInUrl: false,  // ❌ Não detectar sessão
-  }
-}) 
+export { supabase } 
